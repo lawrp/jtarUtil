@@ -147,7 +147,6 @@ void createTar(const string& tarFileName, const vector<File>& files) {
 
 // Read a tar file and list all the files in it from the tarFile name
 void readTar(const string& tarFileName) {
-    cout << "Reading tar file: " << tarFileName << endl;
     ifstream tarFile(tarFileName, ios::binary);
     vector<string> filenames;
     unsigned int fileSize = getFileSize(tarFile);
@@ -206,9 +205,8 @@ void readTar(const string& tarFileName) {
     if (filenames.empty()) {
         cout << "No files found in the tar archive." << endl;
     } else {
-        cout << "Files in " << tarFileName << ":" << endl;
         for (const string& name : filenames) {
-            cout << "- " << name << endl;
+            cout << name << endl;
         }
     }
 }
@@ -396,8 +394,6 @@ vector<File> getFileObjs(vector<string>& inputFiles) {
     vector<string> allFileNames = listAll(inputFiles);
     for (const string& fileName : allFileNames) {
         File fileObj = createFileObj(fileName);
-        fileObj.File::print();
-        cout << endl;
         fileObjs.push_back(fileObj);
     }
     return fileObjs;
