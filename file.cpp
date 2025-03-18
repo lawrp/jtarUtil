@@ -74,36 +74,42 @@ File::File (const File& otherFile)
 }
 
 string File::printPmode() const {
-       if (string(pmode).length() != 4 || pmode[0] != '0') {
-           return "Invalid mode";  // Ensure correct format
-       }
-   
-       string permissions = "-";  // Default: Assume it's a regular file (not a directory)
-
-       const string permissionBits[8] = {
-           "---",
-           "--x",
-           "-w-", 
-           "-wx",  
-           "r--",  
-           "r-x",  
-           "rw-",  
-           "rwx"   
-       };
-   
-       for (int i = 1; i < 4; i++) {
-           if (pmode[i] < '0' || pmode[i] > '7') {
-               return "Invalid mode";  // Ensure valid octal digits
-           }
-           permissions += permissionBits[pmode[i] - '0'];
-       }
-   
-       return permissions;
-   }
+    // First, determine the actual length of the pmode string
+    int length = 0;
+    while (length < 5 && pmode[length] != '\0') {
+        length++;
+    }
+    
+    // Basic validation - we need at least one digit
+    if (length < 1) {
+        return "Invalid mode";
+    }
+    
+    string permissions = "-";  // Default: Assume it's a regular file
+    
+    const string permissionBits[8] = {
+        "---", "--x", "-w-", "-wx", "r--", "r-x", "rw-", "rwx"
+    };
+    
+    // Process up to 3 digits
+    int digits = min(length, 3);
+    for (int i = 0; i < digits; i++) {
+        // Check if this is a valid octal digit
+        if (pmode[i] < '0' || pmode[i] > '7') {
+            return "Invalid mode";
+        }
+        
+        // Convert the digit to an index and append the corresponding permission string
+        int index = pmode[i] - '0';
+        permissions += permissionBits[index];
+    }
+    
+    return permissions;
+}
 
    void File::print() const {
        cout << "Name: " << name << endl;
-       cout << "Permissions: " << printPmode() << endl;
+       cout << "Permissions: " << pmode << ", " << printPmode() << endl;
        cout << "Size: " << size << endl;
        cout << "Timestamp: " << stamp << endl;
        cout << "Is a directory: " << (ADir ? "Yes" : "No") << endl;
